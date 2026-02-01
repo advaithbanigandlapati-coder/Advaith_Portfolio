@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5 Simple Ways to Secure Your System | Advaith Banigandlapati</title>
+    
+    <!-- FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ===== RESET & BASE STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        /* ===== CSS VARIABLES ===== */
+        :root {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #1a1f3a;
+            --bg-card: #141829;
+            
+            --accent-primary: #00ff41;
+            --accent-secondary: #00d9ff;
+            --accent-warning: #ffbf00;
+            --accent-danger: #ff0055;
+            
+            --text-primary: #e4e4e7;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            
+            --border-color: #27272a;
+            --glow-green: rgba(0, 255, 65, 0.3);
+            --glow-cyan: rgba(0, 217, 255, 0.3);
+        }
+
+        /* ===== BODY BASE STYLES ===== */
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* ===== SCROLL PROGRESS BAR ===== */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            z-index: 10000;
+            transition: width 0.1s ease;
+            box-shadow: 0 0 10px var(--glow-green);
+        }
+
+        /* ===== SCROLL TO TOP BUTTON ===== */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: all 0.3s ease;
+            z-index: 9999;
+            box-shadow: 0 4px 15px var(--glow-green);
+        }
+
+        .scroll-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .scroll-to-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px var(--glow-green);
+        }
+
+        /* ===== ANIMATED GRID BACKGROUND ===== */
+        .grid-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        /* ===== SCANLINE EFFECT ===== */
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                transparent 50%,
+                rgba(0, 255, 65, 0.02) 50%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 1;
+            animation: scanline 8s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(100%); }
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ===== NAVIGATION BAR ===== */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            padding: 1rem 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* ===== LOGO ===== */
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            font-family: 'Space Mono', monospace;
+            text-shadow: 0 0 20px var(--glow-green);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .logo:hover {
+            text-shadow: 0 0 30px var(--glow-green);
+            transform: scale(1.05);
+        }
+
+        .logo span {
+            color: var(--accent-secondary);
+        }
+
+        /* ===== NAVIGATION LINKS ===== */
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-primary);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            padding-top: 120px;
+            padding-bottom: 4rem;
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .glitch {
+            color: var(--accent-primary);
+            text-shadow: 0 0 20px var(--glow-green);
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        /* ===== STATS BAR ===== */
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            min-width: 150px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 65, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== QUICK NAV ===== */
+        .quick-nav {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 4rem 0;
+            position: sticky;
+            top: 100px;
+            z-index: 100;
+        }
+
+        .quick-nav h3 {
+            color: var(--accent-primary);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .quick-nav-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            list-style: none;
+        }
+
+        .quick-nav-list a {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.8rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .quick-nav-list a:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            transform: translateX(5px);
+        }
+
+        .quick-nav-icon {
+            font-size: 1.3rem;
+        }
+
+        /* ===== SECURITY TIP CARDS ===== */
+        .tips-section {
+            padding: 4rem 0;
+        }
+
+        .tip-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .tip-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tip-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .tip-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .tip-card:hover {
+            border-color: var(--accent-primary);
+            box-shadow: 0 20px 60px rgba(0, 255, 65, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .tip-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .tip-icon {
+            font-size: 3rem;
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .tip-card:hover .tip-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .tip-header-content {
+            flex: 1;
+        }
+
+        .tip-number {
+            font-size: 0.9rem;
+            color: var(--accent-secondary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .difficulty-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .difficulty-beginner {
+            background: rgba(0, 255, 65, 0.1);
+            color: var(--accent-primary);
+            border: 1px solid var(--accent-primary);
+        }
+
+        .difficulty-intermediate {
+            background: rgba(255, 191, 0, 0.1);
+            color: var(--accent-warning);
+            border: 1px solid var(--accent-warning);
+        }
+
+        .time-estimate {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            background: rgba(0, 217, 255, 0.1);
+            color: var(--accent-secondary);
+            border: 1px solid var(--accent-secondary);
+        }
+
+        .tip-title {
+            font-size: 2rem;
+            color: var(--accent-primary);
+            margin-bottom: 1rem;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .tip-description {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        /* ===== WHY THIS MATTERS ===== */
+        .why-matters {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--accent-primary);
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin-bottom: 2rem;
+        }
+
+        .why-matters h4 {
+            color: var(--accent-primary);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .why-matters p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* ===== STEPS ===== */
+        .steps-container {
+            margin: 2rem 0;
+        }
+
+        .steps-container h4 {
+            color: var(--accent-secondary);
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .step-item:hover {
+            border-color: var(--accent-secondary);
+            transform: translateX(5px);
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            box-shadow: 0 0 20px var(--glow-green);
+        }
+
+        .step-content h5 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .step-content p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .step-code {
+            background: var(--bg-primary);
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            margin-top: 0.8rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--accent-secondary);
+            overflow-x: auto;
+        }
+
+        /* ===== COMMON MISTAKES ===== */
+        .mistakes-section {
+            background: rgba(255, 0, 85, 0.05);
+            border-left: 4px solid var(--accent-danger);
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin: 2rem 0;
+        }
+
+        .mistakes-section h4 {
+            color: var(--accent-danger);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .mistakes-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .mistakes-section li {
+            color: var(--text-secondary);
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .mistakes-section li::before {
+            content: '⚠️';
+            position: absolute;
+            left: 0;
+        }
+
+        /* ===== PRO TIP ===== */
+        .pro-tip {
+            background: rgba(0, 217, 255, 0.05);
+            border-left: 4px solid var(--accent-secondary);
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin: 2rem 0;
+        }
+
+        .pro-tip h4 {
+            color: var(--accent-secondary);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pro-tip p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* ===== DOWNLOAD CHECKLIST SECTION ===== */
+        .checklist-cta {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-secondary));
+            border: 1px solid var(--accent-primary);
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            margin: 4rem 0;
+            box-shadow: 0 0 40px rgba(0, 255, 65, 0.1);
+        }
+
+        .checklist-cta h3 {
+            font-size: 2rem;
+            color: var(--accent-primary);
+            margin-bottom: 1rem;
+        }
+
+        .checklist-cta p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+            box-shadow: 0 0 20px var(--glow-green);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px var(--glow-green);
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 6rem;
+        }
+
+        footer p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--accent-primary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: var(--accent-secondary);
+            text-decoration: underline;
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 968px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .tip-header {
+                flex-direction: column;
+            }
+
+            .quick-nav-list {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-bar {
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .tip-title {
+                font-size: 1.5rem;
+            }
+
+            .tip-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .nav-links {
+                font-size: 0.8rem;
+                gap: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Scroll progress bar -->
+    <div class="scroll-progress"></div>
+
+    <!-- Scroll to top button -->
+    <button class="scroll-to-top" aria-label="Scroll to top">↑</button>
+
+    <!-- Background Effects -->
+    <div class="grid-background"></div>
+    <div class="scanline"></div>
+
+    <!-- ===== NAVIGATION BAR ===== -->
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">&lt;/&gt; <span>SECURITY_GUIDE</span></a>
+            <ul class="nav-links">
+                <li><a href="index.html">← Back to Portfolio</a></li>
+                <li><a href="#tips">Security Tips</a></li>
+                <li><a href="troubleshooting.html">Troubleshooting</a></li>
+                <li><a href="#checklist">Checklist</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ===== HERO SECTION ===== -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>
+                    <span class="glitch">5 Simple Ways</span><br>
+                    to Secure Your System
+                </h1>
+                <p class="hero-subtitle">
+                    Practical cybersecurity tips from CyberPatriot competition experience
+                </p>
+                <p class="hero-description">
+                    You don't need to be a security expert to protect your computer. These five essential techniques 
+                    will significantly improve your system's security in less than an hour. Based on real-world 
+                    competition scenarios and industry best practices.
+                </p>
+
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <span class="stat-number">5</span>
+                        <span class="stat-label">Security Tips</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">~45min</span>
+                        <span class="stat-label">Total Time</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">All Levels</span>
+                        <span class="stat-label">Difficulty</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== QUICK NAVIGATION ===== -->
+    <section class="container">
+        <div class="quick-nav">
+            <h3>⚡ Jump to Section</h3>
+            <ul class="quick-nav-list">
+                <li><a href="#tip1"><span class="quick-nav-icon">🔐</span> BitLocker Encryption</a></li>
+                <li><a href="#tip2"><span class="quick-nav-icon">📋</span> Audit Logs</a></li>
+                <li><a href="#tip3"><span class="quick-nav-icon">🔑</span> Password Policies</a></li>
+                <li><a href="#tip4"><span class="quick-nav-icon">👥</span> Strong User Passwords</a></li>
+                <li><a href="#tip5"><span class="quick-nav-icon">🛡️</span> Antivirus at Startup</a></li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ===== TIPS SECTION ===== -->
+    <section id="tips" class="tips-section">
+        <div class="container">
+            
+            <!-- TIP 1: BITLOCKER -->
+            <div id="tip1" class="tip-card">
+                <div class="tip-header">
+                    <div class="tip-icon">🔐</div>
+                    <div class="tip-header-content">
+                        <div class="tip-number">
+                            TIP #1
+                            <span class="difficulty-badge difficulty-beginner">Beginner</span>
+                            <span class="time-estimate">⏱️ 10 minutes</span>
+                        </div>
+                        <h3 class="tip-title">Enable BitLocker Drive Encryption</h3>
+                        <p class="tip-description">
+                            BitLocker is Windows' built-in full-disk encryption tool that protects your data if your computer 
+                            is lost or stolen. Even if someone removes your hard drive, they can't access your files without 
+                            the encryption key.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="why-matters">
+                    <h4>🎯 Why This Matters</h4>
+                    <p>
+                        According to security research, over 70% of data breaches could be prevented with basic encryption. 
+                        BitLocker protects sensitive files, passwords, and personal information from unauthorized physical access. 
+                        It's especially crucial for laptops that could be lost or stolen.
+                    </p>
+                </div>
+
+                <div class="steps-container">
+                    <h4>📝 Step-by-Step Guide</h4>
+                    
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h5>Check if Your System Supports BitLocker</h5>
+                            <p>Open the Start menu and search for "BitLocker". If you see "Manage BitLocker", you're good to go. 
+                            (Note: BitLocker is available on Windows Pro, Enterprise, and Education editions, but not Home.)</p>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h5>Enable BitLocker</h5>
+                            <p>Click "Turn on BitLocker" next to your system drive (usually C:). Windows will check if your 
+                            system is ready and may require a restart.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h5>Choose How to Unlock Your Drive</h5>
+                            <p>Select "Enter a password" and create a strong, memorable password. This password will be 
+                            required every time you start your computer.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h5>Save Your Recovery Key</h5>
+                            <p>CRITICAL: Save this to a USB drive or print it out. Store it somewhere safe (NOT on the encrypted drive). 
+                            You'll need this if you forget your password.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h5>Choose Encryption Mode</h5>
+                            <p>For existing computers, select "Encrypt used disk space only" (faster). For new computers, 
+                            select "Encrypt entire drive" (more secure).</p>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h5>Run System Check and Restart</h5>
+                            <p>BitLocker will run a system check. Restart your computer, and encryption will begin. 
+                            You can continue using your computer during encryption.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mistakes-section">
+                    <h4>⚠️ Common Mistakes to Avoid</h4>
+                    <ul>
+                        <li>Not saving your recovery key in a secure location separate from your computer</li>
+                        <li>Using a weak password that's easy to guess</li>
+                        <li>Turning off BitLocker without a good reason once it's enabled</li>
+                        <li>Forgetting to encrypt external drives with sensitive data</li>
+                    </ul>
+                </div>
+
+                <div class="pro-tip">
+                    <h4>💡 Pro Tip</h4>
+                    <p>
+                        Store your BitLocker recovery key in multiple secure locations: a password manager, a safe at home, 
+                        and with a trusted family member. Never store it on the encrypted drive itself! You can also save it 
+                        to your Microsoft account for easy recovery.
+                    </p>
+                </div>
+            </div>
+
+            <!-- TIP 2: AUDIT LOGS -->
+            <div id="tip2" class="tip-card">
+                <div class="tip-header">
+                    <div class="tip-icon">📋</div>
+                    <div class="tip-header-content">
+                        <div class="tip-number">
+                            TIP #2
+                            <span class="difficulty-badge difficulty-intermediate">Intermediate</span>
+                            <span class="time-estimate">⏱️ 15 minutes</span>
+                        </div>
+                        <h3 class="tip-title">Enable and Monitor Audit Logs</h3>
+                        <p class="tip-description">
+                            Audit logs are detailed records of everything that happens on your system: login attempts, 
+                            file access, system changes, and security events. They're your computer's security camera.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="why-matters">
+                    <h4>🎯 Why This Matters</h4>
+                    <p>
+                        Audit logs help you detect suspicious activity before it becomes a serious problem. They show who 
+                        accessed your system, when, and what they did. In CyberPatriot competitions, proper audit logging 
+                        is often worth significant points because it's critical for detecting intrusions and policy violations.
+                    </p>
+                </div>
+
+                <div class="steps-container">
+                    <h4>📝 Step-by-Step Guide</h4>
+                    
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h5>Open Local Security Policy</h5>
+                            <p>Press Win + R, type <code>secpol.msc</code>, and press Enter. This opens the Local Security Policy editor.</p>
+                            <div class="step-code">secpol.msc</div>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h5>Navigate to Audit Policy</h5>
+                            <p>Expand "Local Policies" → "Audit Policy". You'll see different categories of events you can log.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h5>Enable Critical Audit Categories</h5>
+                            <p>Double-click each policy and enable both "Success" and "Failure" for these essential categories:</p>
+                            <ul style="margin-top: 0.8rem; color: var(--text-secondary);">
+                                <li>✓ Audit Account Logon Events</li>
+                                <li>✓ Audit Account Management</li>
+                                <li>✓ Audit Logon Events</li>
+                                <li>✓ Audit Policy Change</li>
+                                <li>✓ Audit Privilege Use</li>
+                                <li>✓ Audit System Events</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h5>View Your Audit Logs</h5>
+                            <p>Press Win + R, type <code>eventvwr.msc</code>, and press Enter. Navigate to "Windows Logs" → "Security" 
+                            to see all logged security events.</p>
+                            <div class="step-code">eventvwr.msc</div>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h5>Set Up Log Size and Retention</h5>
+                            <p>Right-click "Security" log → Properties. Set "Maximum log size" to at least 100 MB and 
+                            choose "Archive the log when full" to preserve evidence.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mistakes-section">
+                    <h4>⚠️ Common Mistakes to Avoid</h4>
+                    <ul>
+                        <li>Only enabling "Success" events without "Failure" (you need both!)</li>
+                        <li>Setting log size too small, causing important events to be overwritten</li>
+                        <li>Never actually checking the logs after enabling them</li>
+                        <li>Not knowing which Event IDs indicate security problems</li>
+                    </ul>
+                </div>
+
+                <div class="pro-tip">
+                    <h4>💡 Pro Tip</h4>
+                    <p>
+                        Key Event IDs to watch: 4624 (successful login), 4625 (failed login attempt), 4720 (user account created), 
+                        4732 (user added to security group). Multiple 4625 events could indicate a brute-force attack attempt. 
+                        Review your Security logs weekly to catch suspicious patterns early.
+                    </p>
+                </div>
+            </div>
+
+            <!-- TIP 3: PASSWORD POLICIES -->
+            <div id="tip3" class="tip-card">
+                <div class="tip-header">
+                    <div class="tip-icon">🔑</div>
+                    <div class="tip-header-content">
+                        <div class="tip-number">
+                            TIP #3
+                            <span class="difficulty-badge difficulty-beginner">Beginner</span>
+                            <span class="time-estimate">⏱️ 10 minutes</span>
+                        </div>
+                        <h3 class="tip-title">Configure Strong Password Policies</h3>
+                        <p class="tip-description">
+                            Password policies enforce security rules for all user accounts on your system: minimum length, 
+                            complexity requirements, expiration periods, and password history. They prevent users (including you!) 
+                            from creating weak passwords.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="why-matters">
+                    <h4>🎯 Why This Matters</h4>
+                    <p>
+                        Weak passwords are the #1 cause of account compromises. A proper password policy makes it exponentially 
+                        harder for attackers to crack passwords through brute-force or dictionary attacks. Research shows that 
+                        passwords meeting complexity requirements are 10,000+ times harder to crack than simple passwords.
+                    </p>
+                </div>
+
+                <div class="steps-container">
+                    <h4>📝 Step-by-Step Guide</h4>
+                    
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h5>Open Local Security Policy</h5>
+                            <p>Press Win + R, type <code>secpol.msc</code>, and press Enter.</p>
+                            <div class="step-code">secpol.msc</div>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h5>Navigate to Password Policy</h5>
+                            <p>Expand "Account Policies" → "Password Policy". You'll see several password requirements you can configure.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h5>Set Minimum Password Length</h5>
+                            <p>Double-click "Minimum password length" and set it to at least <strong>12 characters</strong>. 
+                            Longer passwords are exponentially more secure.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h5>Enable Password Complexity</h5>
+                            <p>Double-click "Password must meet complexity requirements" and set it to <strong>Enabled</strong>. 
+                            This requires passwords to contain uppercase, lowercase, numbers, and symbols.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h5>Configure Password History</h5>
+                            <p>Double-click "Enforce password history" and set it to remember at least <strong>5 passwords</strong>. 
+                            This prevents users from reusing recent passwords.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h5>Set Maximum Password Age</h5>
+                            <p>Double-click "Maximum password age" and set it to <strong>90 days</strong>. This forces regular 
+                            password changes. (Some experts debate this—use your judgment!)</p>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <h5>Configure Account Lockout Policy</h5>
+                            <p>Navigate to "Account Policies" → "Account Lockout Policy". Set "Account lockout threshold" 
+                            to <strong>5 invalid attempts</strong> to prevent brute-force attacks.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mistakes-section">
+                    <h4>⚠️ Common Mistakes to Avoid</h4>
+                    <ul>
+                        <li>Setting minimum length too short (8 characters is no longer considered secure)</li>
+                        <li>Not enabling complexity requirements, allowing passwords like "Password123"</li>
+                        <li>Setting password expiration too short, leading to predictable password patterns</li>
+                        <li>Not configuring account lockout, leaving systems vulnerable to brute-force attacks</li>
+                    </ul>
+                </div>
+
+                <div class="pro-tip">
+                    <h4>💡 Pro Tip</h4>
+                    <p>
+                        Modern security experts recommend <strong>passphrases</strong> over complex passwords. A passphrase like 
+                        "Coffee!Morning-Sunshine2024" is much stronger and easier to remember than "C0ff3e!@#". Consider setting 
+                        minimum length to 15-16 characters to encourage passphrases. Also, use a password manager to generate 
+                        and store truly random passwords for maximum security!
+                    </p>
+                </div>
+            </div>
+
+            <!-- TIP 4: STRONG USER PASSWORDS -->
+            <div id="tip4" class="tip-card">
+                <div class="tip-header">
+                    <div class="tip-icon">👥</div>
+                    <div class="tip-header-content">
+                        <div class="tip-number">
+                            TIP #4
+                            <span class="difficulty-badge difficulty-beginner">Beginner</span>
+                            <span class="time-estimate">⏱️ 5 minutes</span>
+                        </div>
+                        <h3 class="tip-title">Set Strong Passwords in Local Users and Groups</h3>
+                        <p class="tip-description">
+                            Local Users and Groups is where you manage all user accounts on your computer. Even with good password 
+                            policies, you need to ensure existing accounts actually have strong passwords that meet your requirements.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="why-matters">
+                    <h4>🎯 Why This Matters</h4>
+                    <p>
+                        Password policies only apply to <em>new</em> passwords or password changes. Existing accounts might still 
+                        have weak passwords set before you configured the policy. In CyberPatriot, weak default passwords are 
+                        one of the most common vulnerabilities. Attackers often target administrator accounts and built-in 
+                        guest accounts with weak or blank passwords.
+                    </p>
+                </div>
+
+                <div class="steps-container">
+                    <h4>📝 Step-by-Step Guide</h4>
+                    
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h5>Open Local Users and Groups</h5>
+                            <p>Press Win + R, type <code>lusrmgr.msc</code>, and press Enter. This opens the user management console.</p>
+                            <div class="step-code">lusrmgr.msc</div>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h5>Review All User Accounts</h5>
+                            <p>Click on "Users" folder. You'll see all accounts on the system. Look for:</p>
+                            <ul style="margin-top: 0.8rem; color: var(--text-secondary);">
+                                <li>✓ Administrator accounts (these are high-priority targets)</li>
+                                <li>✓ Guest accounts (should usually be disabled)</li>
+                                <li>✓ Any accounts you don't recognize (potential security risk)</li>
+                                <li>✓ Service accounts with simple names</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h5>Change Weak Passwords</h5>
+                            <p>Right-click each user account → "Set Password". Create a strong password that meets these criteria:</p>
+                            <ul style="margin-top: 0.8rem; color: var(--text-secondary);">
+                                <li>✓ At least 12-16 characters long</li>
+                                <li>✓ Mix of uppercase and lowercase letters</li>
+                                <li>✓ Contains numbers and special characters</li>
+                                <li>✓ Not a dictionary word or common phrase</li>
+                                <li>✓ Unique for each account</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h5>Disable Unnecessary Accounts</h5>
+                            <p>Right-click accounts you don't need (especially Guest) → "Properties" → check "Account is disabled". 
+                            Disabled accounts can't be used to access the system.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h5>Configure Account Properties</h5>
+                            <p>For each active account, right-click → "Properties" and verify:</p>
+                            <ul style="margin-top: 0.8rem; color: var(--text-secondary);">
+                                <li>✓ "User cannot change password" is UNCHECKED (users should be able to change their passwords)</li>
+                                <li>✓ "Password never expires" is UNCHECKED (passwords should expire per policy)</li>
+                                <li>✓ "Account is disabled" is UNCHECKED for accounts you need</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h5>Review Group Memberships</h5>
+                            <p>Click "Groups" folder → double-click "Administrators". Verify only trusted users are in this group. 
+                            Remove any unnecessary accounts from admin privileges.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mistakes-section">
+                    <h4>⚠️ Common Mistakes to Avoid</h4>
+                    <ul>
+                        <li>Leaving the Guest account enabled (major security hole)</li>
+                        <li>Using the same password for multiple accounts</li>
+                        <li>Not removing old/unused accounts (they're easy attack vectors)</li>
+                        <li>Giving too many users Administrator privileges</li>
+                        <li>Setting "Password never expires" on any account</li>
+                    </ul>
+                </div>
+
+                <div class="pro-tip">
+                    <h4>💡 Pro Tip</h4>
+                    <p>
+                        Create a strong password using the "diceware" method or a password manager's generator. For critical 
+                        accounts like Administrator, use a 20+ character passphrase stored in a password manager. Also, regularly 
+                        audit who has admin access—the principle of least privilege says users should only have the minimum 
+                        permissions needed to do their job. Consider renaming the built-in Administrator account to make it 
+                        harder for attackers to target!
+                    </p>
+                </div>
+            </div>
+
+            <!-- TIP 5: ANTIVIRUS AT STARTUP -->
+            <div id="tip5" class="tip-card">
+                <div class="tip-header">
+                    <div class="tip-icon">🛡️</div>
+                    <div class="tip-header-content">
+                        <div class="tip-number">
+                            TIP #5
+                            <span class="difficulty-badge difficulty-intermediate">Intermediate</span>
+                            <span class="time-estimate">⏱️ 5 minutes</span>
+                        </div>
+                        <h3 class="tip-title">Create an Antivirus Quick Scan at Startup</h3>
+                        <p class="tip-description">
+                            Configure Windows Defender (or your antivirus) to automatically run a quick scan every time your 
+                            computer starts. This catches malware before it has a chance to run and spread, providing an 
+                            extra layer of protection.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="why-matters">
+                    <h4>🎯 Why This Matters</h4>
+                    <p>
+                        Many types of malware are designed to run immediately when your computer starts up. By scanning at 
+                        startup, you can detect and remove threats before they activate. This is especially important for 
+                        detecting boot sector viruses, rootkits, and other persistent malware. Regular automated scans ensure 
+                        you're protected even if you forget to scan manually.
+                    </p>
+                </div>
+
+                <div class="steps-container">
+                    <h4>📝 Step-by-Step Guide</h4>
+                    
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h5>Open Task Scheduler</h5>
+                            <p>Press Win + R, type <code>taskschd.msc</code>, and press Enter. This opens Windows Task Scheduler.</p>
+                            <div class="step-code">taskschd.msc</div>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h5>Create a New Task</h5>
+                            <p>In the right panel, click "Create Task..." (not "Create Basic Task"). Give it a descriptive name 
+                            like "Windows Defender Startup Scan".</p>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h5>Configure General Settings</h5>
+                            <p>In the "General" tab:</p>
+                            <ul style="margin-top: 0.8rem; color: var(--text-secondary);">
+                                <li>✓ Check "Run with highest privileges"</li>
+                                <li>✓ Select "Run whether user is logged on or not"</li>
+                                <li>✓ Configure for: Windows 10 (or your version)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h5>Set Trigger to Run at Startup</h5>
+                            <p>Go to "Triggers" tab → "New...":</p>
+                            <ul style="margin-top: 0.8rem; color: var(--text-secondary);">
+                                <li>✓ Begin the task: "At startup"</li>
+                                <li>✓ Delay task for: "1 minute" (gives system time to load)</li>
+                                <li>✓ Check "Enabled"</li>
+                                <li>✓ Click "OK"</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h5>Configure the Action</h5>
+                            <p>Go to "Actions" tab → "New...":</p>
+                            <ul style="margin-top: 0.8rem; color: var(--text-secondary);">
+                                <li>✓ Action: "Start a program"</li>
+                                <li>✓ Program/script: <code>C:\Program Files\Windows Defender\MpCmdRun.exe</code></li>
+                                <li>✓ Add arguments: <code>-Scan -ScanType 1</code></li>
+                                <li>✓ Click "OK"</li>
+                            </ul>
+                            <div class="step-code">C:\Program Files\Windows Defender\MpCmdRun.exe -Scan -ScanType 1</div>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h5>Configure Conditions and Settings</h5>
+                            <p>Go to "Conditions" tab and uncheck "Start the task only if the computer is on AC power" 
+                            so it runs even on battery. In "Settings" tab, check "Run task as soon as possible after a 
+                            scheduled start is missed".</p>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <h5>Save and Test</h5>
+                            <p>Click "OK" to save. You may need to enter your password. Right-click your new task → "Run" 
+                            to test it. Check Windows Security to verify the scan completed.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mistakes-section">
+                    <h4>⚠️ Common Mistakes to Avoid</h4>
+                    <ul>
+                        <li>Not running with highest privileges (scan won't work properly)</li>
+                        <li>Setting delay too short (system may not be ready, causing errors)</li>
+                        <li>Using wrong scan type argument (use -ScanType 1 for quick scan)</li>
+                        <li>Not testing the task after creation</li>
+                        <li>Forgetting to keep Windows Defender definitions updated</li>
+                    </ul>
+                </div>
+
+                <div class="pro-tip">
+                    <h4>💡 Pro Tip</h4>
+                    <p>
+                        Create a second scheduled task for a weekly <strong>full scan</strong> using <code>-ScanType 2</code> 
+                        instead of <code>-ScanType 1</code>. Schedule it for late at night or weekends when you're not using 
+                        the computer. Also, verify that Windows Defender's real-time protection is always enabled in Windows 
+                        Security settings. Quick scans at startup + real-time protection + weekly full scans = comprehensive 
+                        antivirus coverage!
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ===== HAVING ISSUES SECTION ===== -->
+    <section class="container">
+        <div class="checklist-cta" style="background: linear-gradient(135deg, rgba(255, 0, 85, 0.05), var(--bg-secondary)); border-color: var(--accent-danger);">
+            <h3 style="color: var(--accent-danger);">⚠️ Running Into Problems?</h3>
+            <p>
+                If you're experiencing issues while implementing these security measures, check out our comprehensive 
+                troubleshooting guide. It covers solutions for Windows, Linux, and macOS systems.
+            </p>
+            <a href="troubleshooting.html" class="btn btn-primary" style="background: var(--accent-danger); box-shadow: 0 0 20px rgba(255, 0, 85, 0.3);">🔧 View Troubleshooting Guide</a>
+        </div>
+    </section>
+
+    <!-- ===== DOWNLOAD CHECKLIST CTA ===== -->
+    <section id="checklist" class="container">
+        <div class="checklist-cta">
+            <h3>📥 Download Your Security Checklist</h3>
+            <p>
+                Get a printable PDF checklist of all 5 security tips to reference while hardening your system. 
+                Includes step-by-step instructions and verification checkboxes.
+            </p>
+            <a href="security-checklist.pdf" class="btn btn-primary" download>📥 Download Checklist (PDF)</a>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="container">
+            <p>
+                © 2026 Advaith Banigandlapati. Security guide based on CyberPatriot competition experience. 
+                <a href="index.html">← Back to Portfolio</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        // ===== SCROLL PROGRESS BAR =====
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.querySelector('.scroll-progress').style.width = scrolled + '%';
+        });
+
+        // ===== SCROLL TO TOP BUTTON =====
+        const scrollToTopBtn = document.querySelector('.scroll-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.classList.add('visible');
+            } else {
+                scrollToTopBtn.classList.remove('visible');
+            }
+        });
+
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // ===== NAVBAR SCROLL EFFECT =====
+        const nav = document.querySelector('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // ===== SMOOTH SCROLLING =====
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const target = document.querySelector(targetId);
+                if (target) {
+                    const navHeight = nav.offsetHeight;
+                    const targetPosition = target.offsetTop - navHeight - 20;
+                    
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // ===== INTERSECTION OBSERVER FOR ANIMATIONS =====
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe tip cards
+        document.querySelectorAll('.tip-card').forEach((card, index) => {
+            card.style.transitionDelay = `${index * 0.1}s`;
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

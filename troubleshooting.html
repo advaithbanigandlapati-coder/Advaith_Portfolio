@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Troubleshooting Guide | Security Tips</title>
+    
+    <!-- FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ===== RESET & BASE STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        /* ===== CSS VARIABLES ===== */
+        :root {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #1a1f3a;
+            --bg-card: #141829;
+            
+            --accent-primary: #00ff41;
+            --accent-secondary: #00d9ff;
+            --accent-warning: #ffbf00;
+            --accent-danger: #ff0055;
+            
+            --text-primary: #e4e4e7;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            
+            --border-color: #27272a;
+            --glow-green: rgba(0, 255, 65, 0.3);
+            --glow-cyan: rgba(0, 217, 255, 0.3);
+        }
+
+        /* ===== BODY BASE STYLES ===== */
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* ===== ANIMATED GRID BACKGROUND ===== */
+        .grid-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ===== NAVIGATION BAR ===== */
+        nav {
+            position: sticky;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            font-family: 'Space Mono', monospace;
+            text-shadow: 0 0 20px var(--glow-green);
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: var(--accent-secondary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-primary);
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            padding: 6rem 0 4rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            color: var(--accent-danger);
+            margin-bottom: 1rem;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== TROUBLESHOOTING SECTIONS ===== */
+        .troubleshooting-section {
+            padding: 4rem 0;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            color: var(--accent-primary);
+            margin-bottom: 2rem;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .problem-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .problem-card:hover {
+            border-color: var(--accent-danger);
+            box-shadow: 0 10px 40px rgba(255, 0, 85, 0.15);
+        }
+
+        .problem-title {
+            font-size: 1.3rem;
+            color: var(--accent-danger);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .solution {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--accent-primary);
+            padding: 1rem 1.5rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+
+        .solution h4 {
+            color: var(--accent-primary);
+            margin-bottom: 0.8rem;
+        }
+
+        .solution ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .solution li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: var(--text-secondary);
+        }
+
+        .solution li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent-primary);
+            font-weight: bold;
+        }
+
+        .code {
+            background: var(--bg-primary);
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-secondary);
+            font-size: 0.9rem;
+        }
+
+        .warning-box {
+            background: rgba(255, 191, 0, 0.1);
+            border: 2px solid var(--accent-warning);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .warning-box h3 {
+            color: var(--accent-warning);
+            margin-bottom: 1rem;
+        }
+
+        /* ===== OS TABS ===== */
+        .os-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .os-tab {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .os-tab:hover {
+            color: var(--accent-primary);
+        }
+
+        .os-tab.active {
+            color: var(--accent-primary);
+            border-bottom-color: var(--accent-primary);
+        }
+
+        .os-content {
+            display: none;
+        }
+
+        .os-content.active {
+            display: block;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        footer a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .os-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .os-tab {
+                padding: 0.8rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-background"></div>
+
+    <!-- ===== NAVIGATION ===== -->
+    <nav>
+        <div class="container">
+            <a href="security-guide.html" class="logo">&lt;/&gt; <span>TROUBLESHOOTING</span></a>
+            <ul class="nav-links">
+                <li><a href="security-guide.html">← Back to Guide</a></li>
+                <li><a href="index.html">Portfolio</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero">
+        <div class="container">
+            <h1>⚠️ Troubleshooting Guide</h1>
+            <p>Common problems and solutions for securing your system</p>
+        </div>
+    </section>
+
+    <!-- ===== OS SELECTION TABS ===== -->
+    <section class="container">
+        <div class="os-tabs">
+            <button class="os-tab active" onclick="showOS('windows')">🪟 Windows</button>
+            <button class="os-tab" onclick="showOS('linux')">🐧 Linux</button>
+            <button class="os-tab" onclick="showOS('macos')">🍎 macOS</button>
+        </div>
+    </section>
+
+    <!-- ===== WINDOWS TROUBLESHOOTING ===== -->
+    <div id="windows" class="os-content active">
+        <section class="troubleshooting-section">
+            <div class="container">
+                <h2 class="section-title">Windows Troubleshooting</h2>
+
+                <!-- BitLocker Issues -->
+                <div class="problem-card">
+                    <h3 class="problem-title">🔐 BitLocker Not Available</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        You can't find the BitLocker option in your Control Panel or settings.
+                    </p>
+                    <div class="solution">
+                        <h4>💡 Solution:</h4>
+                        <ul>
+                            <li>BitLocker is only available on Windows Pro, Enterprise, and Education editions</li>
+                            <li>Windows Home does NOT support BitLocker</li>
+                            <li>Check your Windows edition: Settings → System → About</li>
+                            <li>Alternative: Download and use VeraCrypt (free, open-source)</li>
+                            <li>VeraCrypt download: <span class="code">veracrypt.fr</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="problem-card">
+                    <h3 class="problem-title">🔐 TPM Error When Enabling BitLocker</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Error message: "This device can't use a Trusted Platform Module (TPM)"
+                    </p>
+                    <div class="solution">
+                        <h4>💡 Solution:</h4>
+                        <ul>
+                            <li>Press Win + R, type: <span class="code">gpedit.msc</span></li>
+                            <li>Navigate to: Computer Configuration → Administrative Templates → Windows Components → BitLocker Drive Encryption → Operating System Drives</li>
+                            <li>Double-click "Require additional authentication at startup"</li>
+                            <li>Set to "Enabled"</li>
+                            <li>Check "Allow BitLocker without a compatible TPM"</li>
+                            <li>Click OK and retry BitLocker setup</li>
+                            <li>You'll need to use a password or USB key instead</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="problem-card">
+                    <h3 class="problem-title">🔐 BitLocker Encryption Very Slow</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        BitLocker encryption is taking hours or seems stuck.
+                    </p>
+                    <div class="solution">
+                        <h4>💡 This is Normal:</h4>
+                        <ul>
+                            <li>Full-disk encryption can take 1-8 hours depending on drive size</li>
+                            <li>You CAN use your computer during encryption (performance may be slower)</li>
+                            <li>Don't turn off, hibernate, or put computer to sleep during initial encryption</li>
+                            <li>Check progress: Control Panel → BitLocker → View status</li>
+                            <li>If truly stuck for 12+ hours, restart and encryption will resume</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Audit Log Issues -->
+                <div class="problem-card">
+                    <h3 class="problem-title">📋 Can't Open secpol.msc</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Getting an error when trying to open Local Security Policy (secpol.msc).
+                    </p>
+                    <div class="solution">
+                        <h4>💡 Solution:</h4>
+                        <ul>
+                            <li>secpol.msc only exists on Pro/Enterprise/Education editions</li>
+                            <li>Windows Home users: Use Group Policy Editor instead</li>
+                            <li>Press Win + R, type: <span class="code">gpedit.msc</span></li>
+                            <li>Navigate to: Computer Configuration → Windows Settings → Security Settings</li>
+                            <li>Alternative: Upgrade to Windows Pro (if budget allows)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="problem-card">
+                    <h3 class="problem-title">📋 Security Log Fills Up Too Quickly</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Event Viewer's Security log is constantly full and overwriting events.
+                    </p>
+                    <div class="solution">
+                        <h4>💡 Solution:</h4>
+                        <ul>
+                            <li>Open Event Viewer: Win + R → <span class="code">eventvwr.msc</span></li>
+                            <li>Navigate to Windows Logs → Security</li>
+                            <li>Right-click Security → Properties</li>
+                            <li>Increase "Maximum log size" to 200 MB or more</li>
+                            <li>Select "Archive the log when full, do not overwrite events"</li>
+                            <li>Consider creating Task Scheduler job to auto-backup logs weekly</li>
+                            <li>Use filters to reduce logged events (be careful not to miss important ones!)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="problem-card">
+                    <h3 class="problem-title">📋 Too Many Events - Can't Find What I Need</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        The Security log has thousands of events and it's overwhelming.
+                    </p>
+                    <div class="solution">
+                        <h4>💡 Solution - Use Filters:</h4>
+                        <ul>
+                            <li>In Event Viewer, right-click Security log → Filter Current Log</li>
+                            <li>Filter by Event ID: Enter 4625 for failed logins, 4624 for successful logins</li>
+                            <li>Filter by date: Set "Logged" to Last 24 hours or custom range</li>
+                            <li>Filter by keywords: Enter username or computer name</li>
+                            <li>Save useful filters: Actions → Create Custom View</li>
+                            <li>Focus on critical Event IDs: 4625, 4624, 4720, 4732, 4738</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Password Policy Issues -->
+                <div class="problem-card">
+                    <h3 class="problem-title">🔑 Password Policy Not Working on Existing Passwords</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Set password policy but existing users still have weak passwords.
+                    </p>
+                    <div class="solution">
+                        <h4>💡 This is Expected Behavior:</h4>
+                        <ul>
+                            <li>Password policies only apply to NEW passwords or password changes</li>
+                            <li>Existing passwords are grandfathered in</li>
+                            <li>Force password reset: Win + R → <span class="code">lusrmgr.msc</span></li>
+                            <li>Right-click each user → "Set Password" manually</li>
+                            <li>Or set "Maximum password age" to force periodic changes</li>
+                            <li>Users will be prompted to create new password at next login</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="problem-card">
+                    <h3 class="problem-title">🔑 Account Locks Out Too Frequently</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Users are getting locked out constantly due to failed login attempts.
+                    </p>
+                    <div class="solution">
+                        <h4>💡 Solution - Adjust Settings:</h4>
+                        <ul>
+                            <li>Open: Win + R → <span class="code">secpol.msc</span></li>
+                            <li>Navigate to Account Policies → Account Lockout Policy</li>
+                            <li>Increase "Account lockout threshold" from 5 to 10-15 attempts</li>
+                            <li>Increase "Reset account lockout counter after" to 60 minutes</li>
+                            <li>Educate users about password requirements</li>
+                            <li>Check audit logs for persistent attackers (Event ID 4625)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- User Account Issues -->
+                <div class="problem-card">
+                    <h3 class="problem-title">👥 Can't Access lusrmgr.msc</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Local Users and Groups won't open on your system.
+                    </p>
+                    <div class="solution">
+                        <h4>💡 Solution:</h4>
+                        <ul>
+                            <li>lusrmgr.msc only on Pro/Enterprise/Education editions</li>
+                            <li>Alternative 1: Right-click Start → Computer Management → Local Users and Groups</li>
+                            <li>Alternative 2: Use Command Prompt as Administrator</li>
+                            <li>Change password: <span class="code">net user [username] *</span></li>
+                            <li>Disable user: <span class="code">net user [username] /active:no</span></li>
+                            <li>List users: <span class="code">net user</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="problem-card">
+                    <h3 class="problem-title">👥 Lost Admin Password</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Changed administrator password and forgot it or didn't write it down.
+                    </p>
+                    <div class="solution">
+                        <h4>💡 Solutions (In Order of Difficulty):</h4>
+                        <ul>
+                            <li>If another admin account exists: Login with that account</li>
+                            <li>Use password reset disk (if you created one beforehand)</li>
+                            <li>Boot into Safe Mode and use built-in Administrator account</li>
+                            <li>Use Windows installation media to reset password</li>
+                            <li>Third-party tools: Ophcrack, Kon-Boot (use at your own risk)</li>
+                            <li><strong>Prevention:</strong> Always document admin passwords securely!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Task Scheduler Issues -->
+                <div class="problem-card">
+                    <h3 class="problem-title">🛡️ Scheduled Antivirus Scan Doesn't Run</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Created the startup scan task but it never executes.
+                    </p>
+                    <div class="solution">
+                        <h4>💡 Troubleshooting Steps:</h4>
+                        <ul>
+                            <li>Open Task Scheduler: Win + R → <span class="code">taskschd.msc</span></li>
+                            <li>Find your task → Check status is "Ready" not "Disabled"</li>
+                            <li>Right-click task → Properties → Verify "Run with highest privileges" is checked</li>
+                            <li>Check the path: <span class="code">C:\Program Files\Windows Defender\MpCmdRun.exe</span></li>
+                            <li>Verify arguments: <span class="code">-Scan -ScanType 1</span></li>
+                            <li>Click "History" tab to see error messages</li>
+                            <li>Test manually: Right-click task → Run</li>
+                            <li>Check Windows Security for scan results</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="problem-card">
+                    <h3 class="problem-title">🛡️ Scan Runs But Doesn't Complete</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Task starts but scan never finishes or shows results.
+                    </p>
+                    <div class="solution">
+                        <h4>💡 Solution:</h4>
+                        <ul>
+                            <li>Increase startup delay to 2-3 minutes (system needs time to boot fully)</li>
+                            <li>Open Windows Security → Virus & threat protection → Protection history</li>
+                            <li>Test command manually: Open Command Prompt as Administrator</li>
+                            <li>Run: <span class="code">"C:\Program Files\Windows Defender\MpCmdRun.exe" -Scan -ScanType 1</span></li>
+                            <li>Check system resources during startup - may be too heavy</li>
+                            <li>Consider scheduling for 5 minutes after startup instead</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Still Having Issues?</h3>
+                    <p style="color: var(--text-secondary);">
+                        If problems persist after trying these solutions:
+                    </p>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>Check Windows Update - ensure your system is fully updated</li>
+                        <li>Run System File Checker: <span class="code">sfc /scannow</span> in Admin Command Prompt</li>
+                        <li>Check Windows Event Viewer for system errors</li>
+                        <li>Consult Microsoft Support documentation</li>
+                        <li>Post in r/techsupport or Microsoft Community forums</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ===== LINUX TROUBLESHOOTING ===== -->
+    <div id="linux" class="os-content">
+        <section class="troubleshooting-section">
+            <div class="container">
+                <h2 class="section-title">Linux Troubleshooting</h2>
+
+                <div class="problem-card">
+                    <h3 class="problem-title">🔐 LUKS Encryption Setup Failed</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Getting errors when trying to set up LUKS encryption.
+                    </p>
+                    <div class="solution">
+                        <h4>💡 Solution:</h4>
+                        <ul>
+                            <li>Ensure you have backed up ALL data first</li>
+                            <li>Check you're using correct device: <span class="code">lsblk</span> to list drives</li>
+                            <li>Install cryptsetup: <span class="code">sudo apt install cryptsetup</span></li>
+                            <li>Unmount the partition first: <span class="code">sudo umount /dev/sdX</span></li>
+                            <li>Format with LUKS: <span class="code">sudo cryptsetup luksFormat /dev/sdX</span></li>
+                            <li>Common error: "Device busy" means partition is mounted - unmount it</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="problem-card">
+                    <h3 class="problem-title">📋 Can't View System Logs</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        journalctl or log files aren't accessible.
+                    </p>
+                    <div class="solution">
+                        <h4>💡 Solution:</h4>
+                        <ul>
+                            <li>Use sudo: <span class="code">sudo journalctl -xe</span></li>
+                            <li>For auth logs: <span class="code">sudo tail -f /var/log/auth.log</span></li>
+                            <li>If auth.log doesn't exist: <span class="code">sudo journalctl -u ssh</span></li>
+                            <li>Check journald is running: <span class="code">systemctl status systemd-journald</span></li>
+                            <li>Enable persistent storage: Edit <span class="code">/etc/systemd/journald.conf</span></li>
+                            <li>Set: <span class="code">Storage=persistent</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="problem-card">
+                    <h3 class="problem-title">🔑 PAM Password Quality Not Working</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Password requirements aren't being enforced after PAM configuration.
+                    </p>
+                    <div class="solution">
+                        <h4>💡 Solution:</h4>
+                        <ul>
+                            <li>Install required package: <span class="code">sudo apt install libpam-pwquality</span></li>
+                            <li>Edit: <span class="code">sudo nano /etc/pam.d/common-password</span></li>
+                            <li>Add BEFORE other password lines: <span class="code">password requisite pam_pwquality.so retry=3 minlen=12 ucredit=-1 lcredit=-1 dcredit=-1 ocredit=-1</span></li>
+                            <li>Test with a new user or password change</li>
+                            <li>Check syntax: No extra spaces or typos</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="problem-card">
+                    <h3 class="problem-title">🛡️ ClamAV Scan Not Running</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        ClamAV scheduled scan isn't executing at startup.
+                    </p>
+                    <div class="solution">
+                        <h4>💡 Solution:</h4>
+                        <ul>
+                            <li>Check ClamAV is installed: <span class="code">clamscan --version</span></li>
+                            <li>Update virus definitions: <span class="code">sudo freshclam</span></li>
+                            <li>Check crontab: <span class="code">crontab -l</span></li>
+                            <li>Add to crontab: <span class="code">crontab -e</span></li>
+                            <li>Add line: <span class="code">@reboot /usr/bin/clamscan -r /home --log=/var/log/clamav/startup-scan.log</span></li>
+                            <li>Check daemon: <span class="code">systemctl status clamav-daemon</span></li>
+                            <li>Enable daemon: <span class="code">sudo systemctl enable clamav-daemon</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="problem-card">
+                    <h3 class="problem-title">👥 Can't Lock/Disable User Account</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Commands to disable users aren't working as expected.
+                    </p>
+                    <div class="solution">
+                        <h4>💡 Solution:</h4>
+                        <ul>
+                            <li>Lock account: <span class="code">sudo usermod -L username</span></li>
+                            <li>Unlock account: <span class="code">sudo usermod -U username</span></li>
+                            <li>Expire account: <span class="code">sudo usermod -e 1 username</span></li>
+                            <li>Check lock status: <span class="code">sudo passwd -S username</span></li>
+                            <li>Delete user: <span class="code">sudo userdel username</span></li>
+                            <li>Delete user + home: <span class="code">sudo userdel -r username</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Linux-Specific Tips</h3>
+                    <p style="color: var(--text-secondary);">
+                        Linux troubleshooting often requires checking:
+                    </p>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>System logs: <span class="code">sudo journalctl -xb</span> (current boot)</li>
+                        <li>Permissions: Many issues are permission-related - use sudo</li>
+                        <li>SELinux/AppArmor: May block legitimate actions - check logs</li>
+                        <li>Package manager: Update repos with <span class="code">sudo apt update</span></li>
+                        <li>Distributions vary: Commands may differ between Ubuntu, Fedora, Arch, etc.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ===== MACOS TROUBLESHOOTING ===== -->
+    <div id="macos" class="os-content">
+        <section class="troubleshooting-section">
+            <div class="container">
+                <h2 class="section-title">macOS Troubleshooting</h2>
+
+                <div class="problem-card">
+                    <h3 class="problem-title">🔐 FileVault Won't Enable</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Can't turn on FileVault encryption in System Preferences.
+                    </p>
+                    <div class="solution">
+                        <h4>💡 Solution:</h4>
+                        <ul>
+                            <li>Ensure you're logged in as an administrator</li>
+                            <li>Click the lock icon in System Preferences → Security & Privacy</li>
+                            <li>Enter admin password to unlock settings</li>
+                            <li>Go to FileVault tab → Click "Turn On FileVault"</li>
+                            <li>If greyed out: Your Mac may use an Apple T2 chip with automatic encryption</li>
+                            <li>Check encryption status: System Preferences → Security & Privacy → FileVault</li>
+                            <li>Terminal check: <span class="code">fdesetup status</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="problem-card">
+                    <h3 class="problem-title">🔐 FileVault Recovery Key Lost</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Can't find the FileVault recovery key.
+                    </p>
+                    <div class="solution">
+                        <h4>💡 Solution:</h4>
+                        <ul>
+                            <li>If saved to iCloud: Sign in at appleid.apple.com → Security → Recovery Key</li>
+                            <li>If still logged in: System Preferences → Security & Privacy → FileVault → "Create a recovery key"</li>
+                            <li>PREVENTION: Store recovery key in multiple secure locations</li>
+                            <li>Consider: Password manager, physical safe, trusted family member</li>
+                            <li>WARNING: Without recovery key, data is permanently lost if you forget password</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="problem-card">
+                    <h3 class="problem-title">📋 Can't Access Console Logs</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Console app won't show system logs or appears empty.
+                    </p>
+                    <div class="solution">
+                        <h4>💡 Solution:</h4>
+                        <ul>
+                            <li>Open Console: Applications → Utilities → Console</li>
+                            <li>Click "Start" button in toolbar to start streaming</li>
+                            <li>Select device in sidebar (usually your Mac's name)</li>
+                            <li>Use search to filter: Enter keywords in search bar</li>
+                            <li>Terminal alternative: <span class="code">log show --predicate 'eventMessage contains "error"' --last 1h</span></li>
+                            <li>View specific process: <span class="code">log show --predicate 'process == "loginwindow"'</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="problem-card">
+                    <h3 class="problem-title">🔑 Can't Change Password Policy</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        System Preferences doesn't offer password complexity options.
+                    </p>
+                    <div class="solution">
+                        <h4>💡 Solution - Use pwpolicy Command:</h4>
+                        <ul>
+                            <li>Open Terminal</li>
+                            <li>Set minimum length: <span class="code">sudo pwpolicy -setglobalpolicy 'minChars=12'</span></li>
+                            <li>Require complexity: <span class="code">sudo pwpolicy -setglobalpolicy 'requiresAlpha=1 requiresNumeric=1'</span></li>
+                            <li>Multiple requirements: <span class="code">sudo pwpolicy -setglobalpolicy 'minChars=12 requiresAlpha=1 requiresNumeric=1 requiresSymbol=1'</span></li>
+                            <li>View current policy: <span class="code">sudo pwpolicy -getglobalpolicy</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="problem-card">
+                    <h3 class="problem-title">👥 Guest User Can't Be Disabled</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Guest User keeps re-enabling itself.
+                    </p>
+                    <div class="solution">
+                        <h4>💡 Solution:</h4>
+                        <ul>
+                            <li>System Preferences → Users & Groups</li>
+                            <li>Click lock icon and authenticate</li>
+                            <li>Select "Guest User" in left sidebar</li>
+                            <li>Uncheck "Allow guests to log in to this computer"</li>
+                            <li>Also uncheck "Allow guest users to connect to shared folders"</li>
+                            <li>If it re-enables: May be required by institutional profile</li>
+                            <li>Check: System Preferences → Profiles for restrictions</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="problem-card">
+                    <h3 class="problem-title">🛡️ XProtect Not Updating</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Built-in malware protection isn't getting updates.
+                    </p>
+                    <div class="solution">
+                        <h4>💡 Solution:</h4>
+                        <ul>
+                            <li>XProtect updates automatically with macOS updates</li>
+                            <li>Check for updates: System Preferences → Software Update</li>
+                            <li>Force check: <span class="code">sudo softwareupdate -l</span></li>
+                            <li>Install all: <span class="code">sudo softwareupdate -ia</span></li>
+                            <li>XProtect definitions location: <span class="code">/System/Library/CoreServices/XProtect.bundle</span></li>
+                            <li>Consider third-party: ClamXAV, Malwarebytes, or Sophos for additional protection</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="problem-card">
+                    <h3 class="problem-title">🔑 Keychain Access Issues</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Getting constant keychain password prompts or keychain errors.
+                    </p>
+                    <div class="solution">
+                        <h4>💡 Solution:</h4>
+                        <ul>
+                            <li>Open Keychain Access (Applications → Utilities)</li>
+                            <li>Select "login" keychain in left sidebar</li>
+                            <li>Edit → Change Password for Keychain "login"</li>
+                            <li>Use your current login password</li>
+                            <li>If corrupted: Delete login keychain (backup first!)</li>
+                            <li>Logout/login to create new clean keychain</li>
+                            <li>Reset all keychains: <span class="code">security delete-keychain ~/Library/Keychains/login.keychain-db</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ macOS-Specific Notes</h3>
+                    <p style="color: var(--text-secondary);">
+                        Important considerations for macOS:
+                    </p>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>System Integrity Protection (SIP) prevents many low-level changes</li>
+                        <li>Don't disable SIP unless absolutely necessary and you know what you're doing</li>
+                        <li>Gatekeeper may block unsigned applications - right-click → Open to bypass</li>
+                        <li>FileVault is very secure but recovery key is CRITICAL - store it safely</li>
+                        <li>Apple T2/M1/M2 chips include hardware encryption by default</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="container">
+            <p>© 2026 Advaith Banigandlapati | <a href="security-guide.html">Back to Security Guide</a> | <a href="index.html">Portfolio</a></p>
+        </div>
+    </footer>
+
+    <script>
+        function showOS(os) {
+            // Hide all OS content
+            document.querySelectorAll('.os-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.os-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected OS content
+            document.getElementById(os).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
