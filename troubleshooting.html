@@ -115,6 +115,43 @@
             color: var(--accent-secondary);
         }
 
+        /* ===== MOBILE MENU TOGGLE ===== */
+        .mobile-menu-toggle {
+            display: none; /* Hidden by default on desktop */
+            background: none;
+            border: none;
+            color: var(--accent-primary);
+            font-size: 1.8rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 1001;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block; /* Show only on mobile */
+            }
+        }
+
+        /* ===== MENU OVERLAY ===== */
+        .menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .menu-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
         .nav-links {
             display: flex;
             gap: 2rem;
@@ -183,6 +220,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
         .solution {
@@ -225,6 +263,7 @@
             font-family: 'JetBrains Mono', monospace;
             color: var(--accent-secondary);
             font-size: 0.9rem;
+            word-break: break-all;
         }
 
         .warning-box {
@@ -246,6 +285,8 @@
             gap: 1rem;
             margin-bottom: 2rem;
             border-bottom: 2px solid var(--border-color);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .os-tab {
@@ -258,6 +299,8 @@
             cursor: pointer;
             transition: all 0.3s ease;
             border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .os-tab:hover {
@@ -286,6 +329,11 @@
             margin-top: 4rem;
         }
 
+        footer p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
         footer a {
             color: var(--accent-primary);
             text-decoration: none;
@@ -295,18 +343,153 @@
             text-decoration: underline;
         }
 
+        /* ===== RESPONSIVE DESIGN ===== */
         @media (max-width: 768px) {
+            .container {
+                padding: 0 1.5rem;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                height: 100vh;
+                width: 70%;
+                max-width: 300px;
+                background: rgba(10, 14, 39, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 6rem 2rem 2rem;
+                gap: 1.5rem;
+                transition: right 0.3s ease;
+                border-left: 1px solid var(--border-color);
+            }
+
+            .nav-links.active {
+                right: 0;
+            }
+
+            .nav-links a {
+                font-size: 1rem;
+                padding: 0.5rem 0;
+            }
+
+            .logo {
+                font-size: 1.1rem;
+            }
+
+            .hero {
+                padding: 4rem 0 3rem;
+            }
+
             .hero h1 {
                 font-size: 2rem;
             }
-            
-            .os-tabs {
-                flex-wrap: wrap;
+
+            .hero p {
+                font-size: 1rem;
             }
-            
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .problem-card {
+                padding: 1.5rem;
+            }
+
+            .problem-title {
+                font-size: 1.1rem;
+            }
+
+            .solution {
+                padding: 1rem;
+            }
+
+            .os-tabs {
+                gap: 0.5rem;
+                padding-bottom: 0;
+            }
+
             .os-tab {
-                padding: 0.8rem 1rem;
+                padding: 0.8rem 1.2rem;
                 font-size: 0.9rem;
+            }
+
+            .code {
+                font-size: 0.8rem;
+            }
+
+            .warning-box {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .hero h1 {
+                font-size: 1.6rem;
+            }
+
+            .hero p {
+                font-size: 0.95rem;
+            }
+
+            .section-title {
+                font-size: 1.3rem;
+            }
+
+            .problem-card {
+                padding: 1rem;
+            }
+
+            .problem-title {
+                font-size: 1rem;
+            }
+
+            .os-tab {
+                padding: 0.7rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .solution h4 {
+                font-size: 1rem;
+            }
+
+            .solution li {
+                font-size: 0.9rem;
+            }
+
+            .code {
+                font-size: 0.75rem;
+                padding: 0.25rem 0.5rem;
+            }
+        }
+
+        /* ===== TOUCH-FRIENDLY IMPROVEMENTS ===== */
+        @media (hover: none) and (pointer: coarse) {
+            .problem-card:hover {
+                transform: none;
+            }
+
+            /* Increase tap targets */
+            .os-tab {
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+            }
+
+            .nav-links a {
+                min-height: 44px;
+                display: flex;
+                align-items: center;
             }
         }
     </style>
@@ -314,10 +497,14 @@
 <body>
     <div class="grid-background"></div>
 
+    <!-- Mobile menu overlay -->
+    <div class="menu-overlay"></div>
+
     <!-- ===== NAVIGATION ===== -->
     <nav>
         <div class="container">
             <a href="security-guide.html" class="logo">&lt;/&gt; <span>TROUBLESHOOTING</span></a>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">☰</button>
             <ul class="nav-links">
                 <li><a href="security-guide.html">← Back to Guide</a></li>
                 <li><a href="index.html">Portfolio</a></li>
@@ -858,6 +1045,30 @@
     </footer>
 
     <script>
+        // ===== MOBILE MENU TOGGLE =====
+        const menuToggle = document.querySelector('.mobile-menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        const menuOverlay = document.querySelector('.menu-overlay');
+
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+        });
+
+        menuOverlay.addEventListener('click', () => {
+            navLinks.classList.remove('active');
+            menuOverlay.classList.remove('active');
+        });
+
+        // Close menu when clicking a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                menuOverlay.classList.remove('active');
+            });
+        });
+
+        // ===== OS TAB SWITCHING =====
         function showOS(os) {
             // Hide all OS content
             document.querySelectorAll('.os-content').forEach(content => {
