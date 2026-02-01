@@ -500,6 +500,37 @@
             transform: translateY(0);
         }
 
+        /* ===== SUBTLE SCROLL TRANSITIONS ===== */
+        section.visible.scroll-down {
+            animation: subtleSlideUp 0.4s ease-out;
+        }
+
+        section.visible.scroll-up {
+            animation: subtleSlideDown 0.4s ease-out;
+        }
+
+        @keyframes subtleSlideUp {
+            from {
+                transform: translateY(15px);
+                opacity: 0.7;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes subtleSlideDown {
+            from {
+                transform: translateY(-15px);
+                opacity: 0.7;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
         .section-header {
             text-align: center;
             margin-bottom: 4rem;
@@ -1745,6 +1776,10 @@
 
     <!-- ===== JAVASCRIPT ===== -->
     <script>
+        // Track scroll direction and last section positions
+        let lastScrollTop = 0;
+        let sectionsViewed = new Set();
+
         // ===== SMOOTH SCROLLING =====
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -1797,20 +1832,46 @@
             }
         });
 
-        // ===== INTERSECTION OBSERVER FOR ANIMATIONS =====
+        // ===== ENHANCED INTERSECTION OBSERVER FOR ANIMATIONS =====
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'
         };
 
         const observer = new IntersectionObserver((entries) => {
+            // Detect scroll direction
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const scrollDirection = scrollTop > lastScrollTop ? 'down' : 'up';
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
+                    const target = entry.target;
+                    const sectionId = target.id;
+                    
+                    // Check if this is the first time viewing this section
+                    const isFirstView = !sectionsViewed.has(sectionId);
+                    
+                    if (isFirstView) {
+                        // First view - use original animation
+                        target.classList.add('visible');
+                        sectionsViewed.add(sectionId);
+                    } else {
+                        // Subsequent views - use subtle scroll animation
+                        target.classList.remove('scroll-up', 'scroll-down');
+                        // Force reflow
+                        void target.offsetWidth;
+                        target.classList.add('visible', `scroll-${scrollDirection}`);
+                        
+                        // Remove animation class after it completes
+                        setTimeout(() => {
+                            target.classList.remove('scroll-up', 'scroll-down');
+                        }, 400);
+                    }
                     
                     // Animate skill bars
-                    if (entry.target.classList.contains('skill-category')) {
-                        const bars = entry.target.querySelectorAll('.skill-progress');
+                    if (target.classList.contains('skill-category')) {
+                        const bars = target.querySelectorAll('.skill-progress');
                         bars.forEach(bar => {
                             const width = bar.getAttribute('data-width');
                             setTimeout(() => {
